@@ -17,7 +17,7 @@ def create_tables(conn):
     with conn.cursor() as cur:
         cur.execute("""
         CREATE TABLE IF NOT EXISTS Users (
-            user_id SERIAL PRIMARY KEY,
+            user_id INT PRIMARY KEY,
             first_name VARCHAR(50),
             last_name VARCHAR(50),
             email VARCHAR(100),
@@ -37,21 +37,24 @@ def create_tables(conn):
         );
 
         CREATE TABLE IF NOT EXISTS Orders (
-            order_id SERIAL PRIMARY KEY,
-            user_id INT REFERENCES Users(user_id),
+            order_id BIGSERIAL PRIMARY KEY,
+            user_id BIGINT NOT NULL,
             order_date TIMESTAMP,
             total_amount DECIMAL(10, 2),
             status VARCHAR(20),
-            delivery_date DATE
+            delivery_date DATE,
+            FOREIGN KEY (user_id) REFERENCES Users(user_id)
         );
 
         CREATE TABLE IF NOT EXISTS OrderDetails (
-            order_detail_id SERIAL PRIMARY KEY,
-            order_id INT REFERENCES Orders(order_id),
-            product_id INT REFERENCES Products(product_id),
-            quantity INT,
-            price_per_unit DECIMAL(10, 2),
-            total_price DECIMAL(10, 2)
+            order_detail_id BIGSERIAL PRIMARY KEY,
+            order_id BIGINT NOT NULL,
+            product_id BIGINT NOT NULL,
+            quantity INT NOT NULL,
+            price_per_unit NUMERIC(10, 2) NOT NULL,
+            total_price NUMERIC(10, 2) NOT NULL,
+            FOREIGN KEY (order_id) REFERENCES Orders(order_id),
+            FOREIGN KEY (product_id) REFERENCES Products(product_id)
         );
 
         CREATE TABLE IF NOT EXISTS ProductCategories (
