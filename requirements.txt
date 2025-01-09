@@ -1,3 +1,18 @@
-apache-airflow~=2.10.4
-psycopg2-binary~=2.9.10
-Faker~=33.3.0
+# Основные библиотеки
+psycopg2-binary  # Для работы с PostgreSQL
+mysql-connector-python  # Для работы с MySQL
+apache-airflow  # Для управления пайплайнами
+pandas  # Для обработки данных
+sqlalchemy  # Для работы с SQL через ORM
+
+# Дополнительные библиотеки для анализа данных и разработки
+numpy  # Для работы с массивами данных
+pyyaml  # Для работы с YAML-конфигурациями
+
+# Для опциональных задач с Kafka и Spark
+kafka-python  # Клиент для работы с Apache Kafka
+pyspark  # Библиотека для работы с Apache Spark
+
+# Для тестирования и мониторинга
+pytest  # Для написания тестов
+pytest-mock  # Моки для тестов
