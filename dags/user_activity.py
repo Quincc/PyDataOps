@@ -2,22 +2,26 @@ from airflow import DAG
 from airflow.operators.python import PythonOperator
 from airflow.providers.mysql.hooks.mysql import MySqlHook
 from datetime import datetime
-import pymysql
+
+# Утилита для очистки значения даты/времени
+def clean_datetime(value):
+    if value == '0000-00-00 00:00:00' or value is None:
+        return None
+    return value
 
 def create_user_activity_table():
     mysql = MySqlHook(mysql_conn_id="mysql_conn")
     mysql_conn = mysql.get_conn()
-    cursor= mysql_conn.cursor()
+    cursor = mysql_conn.cursor()
 
     # Создаем таблицу user_activity
     query_create_table = """
-        CREATE TABLE IF NOT EXISTS user_activity (
+        CREATE TABLE IF NOT EXISTS UserActivity (
             user_id INT,
             first_name VARCHAR(255),
             last_name VARCHAR(255),
             total_orders INT,
-            total_spent DECIMAL(10, 2),
-            last_order_date TIMESTAMP,
+            total_spent DECIMAL(10, 2)
         );
     """
     cursor.execute(query_create_table)
@@ -25,25 +29,20 @@ def create_user_activity_table():
     cursor.close()
     mysql_conn.close()
 
-# Функция для заполнения таблицы
 def populate_user_activity_table():
     mysql = MySqlHook(mysql_conn_id="mysql_conn")
     mysql_conn = mysql.get_conn()
-    cursor= mysql_conn.cursor()
+    cursor = mysql_conn.cursor()
 
     # Вставляем данные в таблицу user_activity
     query_insert_data = """
-        INSERT INTO user_activity (user_id, first_name, last_name, total_orders, total_spent, last_order_date)
+        INSERT INTO UserActivity (user_id, first_name, last_name, total_orders, total_spent)
         SELECT
             u.user_id,
             u.first_name,
             u.last_name,
             COUNT(o.order_id) AS total_orders,
-            SUM(o.total_amount) AS total_spent,
-            MAX(CASE 
-                    WHEN o.order_date = '0000-00-00 00:00:00' OR o.order_date IS NULL THEN NULL
-                    ELSE o.order_date
-                END) AS last_order_date
+            SUM(o.total_amount) AS total_spent
         FROM
             users u
         LEFT JOIN
